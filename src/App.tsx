@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import useDrag from './useDrag'
 import {nanoid} from 'nanoid'
 import ColorPalette from './ColorPalette'
-import {useScale} from './state'
+import {Tool, useCurrentTool, useScale} from './state'
 import {useDrawing} from './useDrawing'
 
 type ArtBoard = {
@@ -48,12 +48,17 @@ const AddArtBoardContainer = styled.div`
 export default function App() {
   const [artboards, setArtboards] = useState<ArtBoard[]>([])
   const [nextArtBoardNumber, setNextArtBoardNumber] = useState(1)
+  const [, setCurrentTool] = useCurrentTool()
 
   return (
     <Main>
       <Tools>
         <AddArtBoard add={addArtBoard} />
         <ColorPalette />
+        <button onClick={() => setCurrentTool(Tool.Pencil)}>pencil</button>
+        <button onClick={() => setCurrentTool(Tool.Rectangle)}>
+          rectangle
+        </button>
       </Tools>
       {artboards.map((artboard) => (
         <ArtBoardView key={artboard.id} {...artboard} />

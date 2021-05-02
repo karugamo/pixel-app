@@ -1,6 +1,6 @@
 import {atom, useRecoilState} from 'recoil'
 
-enum Tool {
+export enum Tool {
   Pencil,
   Rectangle
 }
