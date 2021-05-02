@@ -1,20 +1,20 @@
 {
-  "name": "react-template",
+  "name": "pixel-app",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "parcel index.html",
-    "build": "parcel build index.html --public-url '/react-template'"
+    "build": "parcel build index.html --public-url '/pixel-app'"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/flexiproducts/react-template.git"
+    "url": "git+https://github.com/flexiproducts/pixel-app.git"
   },
   "bugs": {
-    "url": "https://github.com/flexiproducts/react-template/issues"
+    "url": "https://github.com/flexiproducts/pixel-app/issues"
   },
-  "homepage": "https://github.com/flexiproducts/react-template#readme",
+  "homepage": "https://github.com/flexiproducts/pixel-app#readme",
   "dependencies": {
     "@types/lodash": "^4.14.165",
     "@types/node": "^14.14.7",

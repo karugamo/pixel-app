@@ -1,4 +1,4 @@
-# react-template
+# pixel-app
 
 Run development server with
 ```
