@@ -42,22 +42,24 @@ function ArtBoardView() {
     }
   }, [canvas, onDraw, onStartDraw, onEndDraw])
 
-  const scale = 4
+  const size = 32
+  const scale = 8
 
   return (
     <ArtBoardContainer ref={moveRef}>
       <Handle ref={handleRef}>artboard</Handle>
       <Canvas
         onClick={onDraw}
-        style={{height: 128, width: 128}}
+        style={{height: size * scale, width: size * scale}}
         ref={canvasRef}
-        height={128 / scale}
-        width={128 / scale}
+        height={size}
+        width={size}
       />
     </ArtBoardContainer>
   )
 
-  function onEndDraw() {
+  function onEndDraw(e) {
+    onDraw(e)
     setIsDawing(false)
   }
 
@@ -68,8 +70,9 @@ function ArtBoardView() {
   function onDraw(e) {
     if (!isDrawing) return
     const rect = e.target.getBoundingClientRect()
-    const x = Math.round((e.clientX - rect.left) / scale)
-    const y = Math.round((e.clientY - rect.top) / scale)
+    const centerOffset = scale / 2
+    const x = Math.round((e.clientX - rect.left - centerOffset) / scale)
+    const y = Math.round((e.clientY - rect.top - centerOffset) / scale)
     context?.fillRect(x, y, 1, 1)
   }
 }
@@ -87,8 +90,6 @@ function useDrawingContext() {
 }
 
 const Canvas = styled.canvas`
-  height: 128px;
-  width: 128px;
   background-color: white;
 `
 
