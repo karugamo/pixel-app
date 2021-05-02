@@ -87,7 +87,9 @@ function ArtBoardView({name, width, height}: ArtBoard) {
 
   return (
     <ArtBoardContainer ref={moveRef}>
-      <Handle ref={handleRef}>{name}</Handle>
+      <Handle ref={handleRef}>
+        {name} ({width}x{height})
+      </Handle>
       <Canvas
         style={{height: height * scale, width: width * scale}}
         ref={canvasRef}
