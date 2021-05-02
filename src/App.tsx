@@ -1,15 +1,17 @@
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useState} from 'react'
 import styled from 'styled-components'
 import useDrag from './useDrag'
 import {nanoid} from 'nanoid'
 import ColorPalette from './ColorPalette'
-import {useCurrentColor} from './state'
+import {useScale} from './state'
+import {useDrawing} from './useDrawing'
 
 type ArtBoard = {
   id: string
   name: string
   width: number
   height: number
+  context?: CanvasRenderingContext2D
 }
 
 function AddArtBoard({add}: {add: (width: number, height: number) => void}) {
@@ -70,21 +72,15 @@ export default function App() {
 
 function ArtBoardView({name, width, height}: ArtBoard) {
   const [handleRef, moveRef] = useDrag()
-  const [isDrawing, setIsDawing] = useState(false)
 
-  const [canvasRef, context, canvas] = useDrawingContext()
+  const canvasRef = useDrawing()
 
-  const [currentColor] = useCurrentColor()
-
-  useDrawing()
-
-  const scale = 8
+  const [scale] = useScale()
 
   return (
     <ArtBoardContainer ref={moveRef}>
       <Handle ref={handleRef}>{name}</Handle>
       <Canvas
-        onClick={onDraw}
         style={{height: height * scale, width: width * scale}}
         ref={canvasRef}
         height={height}
@@ -92,51 +88,6 @@ function ArtBoardView({name, width, height}: ArtBoard) {
       />
     </ArtBoardContainer>
   )
-
-  function useDrawing() {
-    useEffect(() => {
-      canvas?.addEventListener('mousemove', onDraw)
-      canvas?.addEventListener('mousedown', onStartDraw)
-      canvas?.addEventListener('mouseup', onEndDraw)
-
-      return () => {
-        canvas?.removeEventListener('mousemove', onDraw)
-        canvas?.removeEventListener('mousedown', onStartDraw)
-        canvas?.removeEventListener('mouseup', onEndDraw)
-      }
-    }, [canvas, onDraw, onStartDraw, onEndDraw])
-  }
-
-  function onEndDraw(e) {
-    onDraw(e)
-    setIsDawing(false)
-  }
-
-  function onStartDraw() {
-    setIsDawing(true)
-  }
-
-  function onDraw(e) {
-    if (!isDrawing || !context) return
-    const rect = e.target.getBoundingClientRect()
-    const centerOffset = scale / 2
-    const x = Math.round((e.clientX - rect.left - centerOffset) / scale)
-    const y = Math.round((e.clientY - rect.top - centerOffset) / scale)
-    context.fillStyle = currentColor
-    context.fillRect(x, y, 1, 1)
-  }
-}
-
-function useDrawingContext() {
-  const canvasRef = useRef<any>(null)
-  const [context, setContext] = useState<any>()
-
-  useEffect(() => {
-    const context = canvasRef.current.getContext('2d')
-    setContext(context)
-  }, [])
-
-  return [canvasRef, context, canvasRef.current]
 }
 
 const Canvas = styled.canvas`

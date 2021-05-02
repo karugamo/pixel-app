@@ -1,5 +1,10 @@
 import {atom, useRecoilState} from 'recoil'
 
+enum Tool {
+  Pencil,
+  Rectangle
+}
+
 const currentColor = atom({
   key: 'currentColor',
   default: '#000000'
@@ -7,4 +12,22 @@ const currentColor = atom({
 
 export function useCurrentColor() {
   return useRecoilState(currentColor)
+}
+
+const currentTool = atom({
+  key: 'currentTool',
+  default: Tool.Pencil
+})
+
+export function useCurrentTool() {
+  return useRecoilState(currentTool)
+}
+
+const scale = atom({
+  key: 'scale',
+  default: 8
+})
+
+export function useScale() {
+  return useRecoilState(scale)
 }
