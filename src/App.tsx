@@ -26,11 +26,23 @@ export default function App() {
 
 function ArtBoardView() {
   const [handleRef, moveRef] = useDrag()
+  const [isDrawing, setIsDawing] = useState(false)
 
-  const [canvasRef, context] = useDrawingContext()
+  const [canvasRef, context, canvas] = useDrawingContext()
+
+  useEffect(() => {
+    canvas?.addEventListener('mousemove', onDraw)
+    canvas?.addEventListener('mousedown', onStartDraw)
+    canvas?.addEventListener('mouseup', onEndDraw)
+
+    return () => {
+      canvas?.removeEventListener('mousemove', onDraw)
+      canvas?.removeEventListener('mousedown', onStartDraw)
+      canvas?.removeEventListener('mouseup', onEndDraw)
+    }
+  }, [canvas, onDraw, onStartDraw, onEndDraw])
 
   const scale = 4
-  console.log(window.devicePixelRatio)
 
   return (
     <ArtBoardContainer ref={moveRef}>
@@ -45,7 +57,16 @@ function ArtBoardView() {
     </ArtBoardContainer>
   )
 
+  function onEndDraw() {
+    setIsDawing(false)
+  }
+
+  function onStartDraw() {
+    setIsDawing(true)
+  }
+
   function onDraw(e) {
+    if (!isDrawing) return
     const rect = e.target.getBoundingClientRect()
     const x = Math.round((e.clientX - rect.left) / scale)
     const y = Math.round((e.clientY - rect.top) / scale)
@@ -54,7 +75,7 @@ function ArtBoardView() {
 }
 
 function useDrawingContext() {
-  const canvasRef = useRef(null)
+  const canvasRef = useRef<any>(null)
   const [context, setContext] = useState<any>()
 
   useEffect(() => {
@@ -62,7 +83,7 @@ function useDrawingContext() {
     setContext(context)
   }, [])
 
-  return [canvasRef, context]
+  return [canvasRef, context, canvasRef.current]
 }
 
 const Canvas = styled.canvas`
