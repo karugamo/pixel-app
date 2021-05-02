@@ -8,7 +8,40 @@ import {useCurrentColor} from './state'
 type ArtBoard = {
   id: string
   name: string
+  width: number
+  height: number
 }
+
+function AddArtBoard({add}: {add: (width: number, height: number) => void}) {
+  const [width, setWidth] = useState(32)
+  const [height, setHeight] = useState(32)
+  return (
+    <AddArtBoardContainer>
+      <AddArtBordInput
+        value={width}
+        onChange={(e) => setWidth(Number((e.target as HTMLInputElement).value))}
+      />
+      <AddArtBordInput
+        value={height}
+        onChange={(e) =>
+          setHeight(Number((e.target as HTMLInputElement).value))
+        }
+      />
+      <button onClick={() => add(width, height)}>Add artboard</button>
+    </AddArtBoardContainer>
+  )
+}
+
+const AddArtBordInput = styled.input`
+  width: 50px;
+`
+
+const AddArtBoardContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-between;
+`
 
 export default function App() {
   const [artboards, setArtboards] = useState<ArtBoard[]>([])
@@ -17,7 +50,7 @@ export default function App() {
   return (
     <Main>
       <Tools>
-        <button onClick={addArtBoard}>Add artboard</button>
+        <AddArtBoard add={addArtBoard} />
         <ColorPalette />
       </Tools>
       {artboards.map((artboard) => (
@@ -26,16 +59,16 @@ export default function App() {
     </Main>
   )
 
-  function addArtBoard() {
+  function addArtBoard(width: number, height: number) {
     setNextArtBoardNumber((number) => number + 1)
     setArtboards((artboards) => [
       ...artboards,
-      {id: nanoid(), name: `artboard ${nextArtBoardNumber}`}
+      {id: nanoid(), name: `artboard ${nextArtBoardNumber}`, width, height}
     ])
   }
 }
 
-function ArtBoardView({name}: ArtBoard) {
+function ArtBoardView({name, width, height}: ArtBoard) {
   const [handleRef, moveRef] = useDrag()
   const [isDrawing, setIsDawing] = useState(false)
 
@@ -45,7 +78,6 @@ function ArtBoardView({name}: ArtBoard) {
 
   useDrawing()
 
-  const size = 32
   const scale = 8
 
   return (
@@ -53,10 +85,10 @@ function ArtBoardView({name}: ArtBoard) {
       <Handle ref={handleRef}>{name}</Handle>
       <Canvas
         onClick={onDraw}
-        style={{height: size * scale, width: size * scale}}
+        style={{height: height * scale, width: width * scale}}
         ref={canvasRef}
-        height={size}
-        width={size}
+        height={height}
+        width={width}
       />
     </ArtBoardContainer>
   )
@@ -109,6 +141,7 @@ function useDrawingContext() {
 
 const Canvas = styled.canvas`
   background-color: white;
+  cursor: crosshair;
 `
 
 const Handle = styled.div`
