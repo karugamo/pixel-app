@@ -27,16 +27,25 @@ export function useDrawing() {
       )
       return
     }
+    if (currentTool === Tool.RectangleOutline) {
+      const {x, y} = getCanvasPosition(e)
+      context.lineWidth = 1
+      context.strokeStyle = currentColor
+      context.strokeRect(
+        startPoint.x - 0.5,
+        startPoint.y - 0.5,
+        x - startPoint.x,
+        y - startPoint.y
+      )
+      return
+    }
     onMouseMove(e)
     setIsDawing(false)
   }
 
   function onMouseDown(e) {
     setIsDawing(true)
-    if (currentTool === Tool.Rectangle) {
-      setStartPoint(getCanvasPosition(e))
-      return
-    }
+    setStartPoint(getCanvasPosition(e))
     onMouseMove(e)
   }
 

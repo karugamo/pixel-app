@@ -57,7 +57,10 @@ export default function App() {
         <ColorPalette />
         <button onClick={() => setCurrentTool(Tool.Pencil)}>pencil</button>
         <button onClick={() => setCurrentTool(Tool.Rectangle)}>
-          rectangle
+          rectangle fill
+        </button>
+        <button onClick={() => setCurrentTool(Tool.RectangleOutline)}>
+          rectangle outline
         </button>
       </Tools>
       {artboards.map((artboard) => (

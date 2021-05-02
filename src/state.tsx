@@ -2,7 +2,8 @@ import {atom, useRecoilState} from 'recoil'
 
 export enum Tool {
   Pencil,
-  Rectangle
+  Rectangle,
+  RectangleOutline
 }
 
 const currentColor = atom({
