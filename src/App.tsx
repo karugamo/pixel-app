@@ -2,33 +2,46 @@ import React, {useEffect, useRef, useState} from 'react'
 import styled from 'styled-components'
 import useDrag from './useDrag'
 import {nanoid} from 'nanoid'
+import ColorPalette from './ColorPalette'
+import {useCurrentColor} from './state'
 
 type ArtBoard = {
   id: string
+  name: string
 }
 
 export default function App() {
   const [artboards, setArtboards] = useState<ArtBoard[]>([])
+  const [nextArtBoardNumber, setNextArtBoardNumber] = useState(1)
 
   return (
     <Main>
-      <button onClick={addArtBoard}>Add artboard</button>
+      <Tools>
+        <button onClick={addArtBoard}>Add artboard</button>
+        <ColorPalette />
+      </Tools>
       {artboards.map((artboard) => (
-        <ArtBoardView key={artboard.id} />
+        <ArtBoardView key={artboard.id} {...artboard} />
       ))}
     </Main>
   )
 
   function addArtBoard() {
-    setArtboards((artboards) => [...artboards, {id: nanoid()}])
+    setNextArtBoardNumber((number) => number + 1)
+    setArtboards((artboards) => [
+      ...artboards,
+      {id: nanoid(), name: `artboard ${nextArtBoardNumber}`}
+    ])
   }
 }
 
-function ArtBoardView() {
+function ArtBoardView({name}: ArtBoard) {
   const [handleRef, moveRef] = useDrag()
   const [isDrawing, setIsDawing] = useState(false)
 
   const [canvasRef, context, canvas] = useDrawingContext()
+
+  const [currentColor] = useCurrentColor()
 
   useDrawing()
 
@@ -37,7 +50,7 @@ function ArtBoardView() {
 
   return (
     <ArtBoardContainer ref={moveRef}>
-      <Handle ref={handleRef}>artboard</Handle>
+      <Handle ref={handleRef}>{name}</Handle>
       <Canvas
         onClick={onDraw}
         style={{height: size * scale, width: size * scale}}
@@ -72,12 +85,13 @@ function ArtBoardView() {
   }
 
   function onDraw(e) {
-    if (!isDrawing) return
+    if (!isDrawing || !context) return
     const rect = e.target.getBoundingClientRect()
     const centerOffset = scale / 2
     const x = Math.round((e.clientX - rect.left - centerOffset) / scale)
     const y = Math.round((e.clientY - rect.top - centerOffset) / scale)
-    context?.fillRect(x, y, 1, 1)
+    context.fillStyle = currentColor
+    context.fillRect(x, y, 1, 1)
   }
 }
 
@@ -104,8 +118,8 @@ const Handle = styled.div`
 
 const ArtBoardContainer = styled.div`
   position: absolute;
-  top: 0px;
-  left: 0px;
+  top: 16px;
+  left: 400px;
 `
 
 const Main = styled.div`
@@ -114,4 +128,15 @@ const Main = styled.div`
 
   background-color: #e5e5e5;
   color: #242422;
+`
+
+const Tools = styled.div`
+  display: flex;
+  padding: 16px;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 200px;
+  background-color: white;
+  height: 100%;
 `
