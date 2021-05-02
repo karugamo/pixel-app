@@ -30,17 +30,7 @@ function ArtBoardView() {
 
   const [canvasRef, context, canvas] = useDrawingContext()
 
-  useEffect(() => {
-    canvas?.addEventListener('mousemove', onDraw)
-    canvas?.addEventListener('mousedown', onStartDraw)
-    canvas?.addEventListener('mouseup', onEndDraw)
-
-    return () => {
-      canvas?.removeEventListener('mousemove', onDraw)
-      canvas?.removeEventListener('mousedown', onStartDraw)
-      canvas?.removeEventListener('mouseup', onEndDraw)
-    }
-  }, [canvas, onDraw, onStartDraw, onEndDraw])
+  useDrawing()
 
   const size = 32
   const scale = 8
@@ -57,6 +47,20 @@ function ArtBoardView() {
       />
     </ArtBoardContainer>
   )
+
+  function useDrawing() {
+    useEffect(() => {
+      canvas?.addEventListener('mousemove', onDraw)
+      canvas?.addEventListener('mousedown', onStartDraw)
+      canvas?.addEventListener('mouseup', onEndDraw)
+
+      return () => {
+        canvas?.removeEventListener('mousemove', onDraw)
+        canvas?.removeEventListener('mousedown', onStartDraw)
+        canvas?.removeEventListener('mouseup', onEndDraw)
+      }
+    }, [canvas, onDraw, onStartDraw, onEndDraw])
+  }
 
   function onEndDraw(e) {
     onDraw(e)
