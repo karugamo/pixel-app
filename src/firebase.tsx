@@ -58,3 +58,11 @@ export function setPosition(
 ) {
   firebase.database().ref(`artboards/${artboardId}/position`).set(position)
 }
+
+export function setImageData(artboardId: string, imageData: ImageData) {
+  firebase.database().ref(`artboards/${artboardId}/imageData`).set({
+    data: imageData.data,
+    width: imageData.width,
+    height: imageData.height
+  })
+}

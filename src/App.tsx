@@ -1,4 +1,4 @@
-import React, {Suspense, useState} from 'react'
+import React, {Suspense} from 'react'
 import styled from 'styled-components'
 import useDrag from './useDrag'
 import {nanoid} from 'nanoid'
@@ -104,8 +104,8 @@ function ArtBoardView({name, width, height, id}: Artboard) {
 }
 
 function ArtboardCanvas({artboardId, height, width}) {
-  const [imageData, setImageData] = useImageData(artboardId)
-  const canvasRef = useDrawing(imageData, setImageData)
+  const imageData = useImageData(artboardId)
+  const canvasRef = useDrawing(artboardId, imageData)
   const [scale] = useScale()
   return (
     <Canvas
