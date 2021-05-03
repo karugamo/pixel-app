@@ -31,9 +31,13 @@ export function useArtboards(): [
 ] {
   const [artboards, setArtboards] = useState<Record<string, Artboard>>({})
   useEffect(() => {
-    database.ref('artboards').on('value', (snapshot) => {
+    database.ref('artboards').on('value', onSnapshot)
+
+    function onSnapshot(snapshot) {
       setArtboards(snapshot.val() ?? {})
-    })
+    }
+
+    return () => database.ref('artboards').off('value', onSnapshot)
   }, [])
 
   function saveArtboard(artboard: Artboard) {

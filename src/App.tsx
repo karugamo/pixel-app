@@ -1,4 +1,4 @@
-import React, {Suspense} from 'react'
+import React, {Suspense, useCallback} from 'react'
 import styled from 'styled-components'
 import useDrag from './useDrag'
 import {nanoid} from 'nanoid'
@@ -15,6 +15,7 @@ import {useDrawing} from './useDrawing'
 import {Artboard} from './types'
 import {deleteArtboard, useArtboards} from './firebase'
 import AddArtboard from './AddArdboard'
+import {useDropzone} from 'react-dropzone'
 
 function CurrentArtboard({artboard}: {artboard: Artboard}) {
   const [, setCurentArtboard] = useCurrentArboard()
@@ -38,8 +39,11 @@ export default function App() {
   const [artboards, saveArtboard] = useArtboards()
   const [currentArtboard] = useCurrentArboard()
 
+  const {getRootProps, getInputProps, isDragActive} = useDropFiles()
+
   return (
-    <Main>
+    <Main {...getRootProps()} fileDrop={isDragActive}>
+      <input {...getInputProps()} />
       <Tools>
         <AddArtboard add={addArtBoard} />
         <ToolEntry>
@@ -71,6 +75,51 @@ export default function App() {
       </Suspense>
     </Main>
   )
+
+  function useDropFiles() {
+    const onDrop = useCallback((acceptedFiles) => {
+      const file = acceptedFiles[0]
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = () => {
+        const image = new Image()
+        image.src = reader.result as string
+        image.onload = () => {
+          const canvas = document.createElement('canvas')
+          canvas.width = image.width
+          canvas.height = image.height
+          const context = canvas.getContext('2d')
+          context.drawImage(image, 0, 0)
+          const imageData = context.getImageData(
+            0,
+            0,
+            image.width,
+            image.height
+          )
+          saveArtboard({
+            id: nanoid(),
+            name: file.name,
+            width: image.width,
+            height: image.height,
+            imageData: {
+              data: imageData.data,
+              width: image.width,
+              height: image.height
+            },
+            position: {
+              x: 100,
+              y: 100
+            }
+          })
+        }
+      }
+    }, [])
+    const {getRootProps, getInputProps, isDragActive} = useDropzone({
+      onDrop,
+      noClick: true
+    })
+    return {getRootProps, getInputProps, isDragActive}
+  }
 
   function addArtBoard(width: number, height: number) {
     saveArtboard({
@@ -133,10 +182,11 @@ const ArtBoardContainer = styled.div`
   left: 400px;
 `
 
-const Main = styled.div`
+const Main = styled.div<{fileDrop: boolean}>`
   position: relative;
   height: 100%;
   color: #242422;
+  ${({fileDrop}) => fileDrop && `background-color: #BDB5B1;`}
 `
 
 const Tools = styled.div`
