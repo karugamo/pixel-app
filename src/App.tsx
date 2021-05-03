@@ -6,54 +6,26 @@ import ColorPalette from './ColorPalette'
 import {Tool, useCurrentTool, useScale} from './state'
 import {useDrawing} from './useDrawing'
 
-type ArtBoard = {
-  id: string
-  name: string
-  width: number
-  height: number
-  context?: CanvasRenderingContext2D
-}
-
-function AddArtBoard({add}: {add: (width: number, height: number) => void}) {
-  const [width, setWidth] = useState(32)
-  const [height, setHeight] = useState(32)
-  return (
-    <AddArtBoardContainer>
-      <AddArtBordInput
-        value={width}
-        onChange={(e) => setWidth(Number((e.target as HTMLInputElement).value))}
-      />
-      <AddArtBordInput
-        value={height}
-        onChange={(e) =>
-          setHeight(Number((e.target as HTMLInputElement).value))
-        }
-      />
-      <button onClick={() => add(width, height)}>Add artboard</button>
-    </AddArtBoardContainer>
-  )
-}
-
-const AddArtBordInput = styled.input`
-  width: 50px;
-`
-
-const AddArtBoardContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  justify-content: space-between;
-`
-
 export default function App() {
   const [artboards, setArtboards] = useState<ArtBoard[]>([])
   const [nextArtBoardNumber, setNextArtBoardNumber] = useState(1)
   const [, setCurrentTool] = useCurrentTool()
+  const [scale, setScale] = useScale()
 
   return (
     <Main>
       <Tools>
         <AddArtBoard add={addArtBoard} />
+        <ToolEntry>
+          scale{' '}
+          <Input
+            type="number"
+            value={scale}
+            onChange={(e) =>
+              setScale(Number((e.target as HTMLInputElement).value))
+            }
+          />
+        </ToolEntry>
         <ColorPalette />
         <button onClick={() => setCurrentTool(Tool.Pencil)}>pencil</button>
         <button onClick={() => setCurrentTool(Tool.Rectangle)}>
@@ -133,4 +105,45 @@ const Tools = styled.div`
   width: 200px;
   background-color: white;
   height: 100%;
+`
+
+type ArtBoard = {
+  id: string
+  name: string
+  width: number
+  height: number
+  context?: CanvasRenderingContext2D
+}
+
+function AddArtBoard({add}: {add: (width: number, height: number) => void}) {
+  const [width, setWidth] = useState(32)
+  const [height, setHeight] = useState(32)
+  return (
+    <ToolEntry>
+      <Input
+        type="number"
+        value={width}
+        onChange={(e) => setWidth(Number((e.target as HTMLInputElement).value))}
+      />
+      <Input
+        type="number"
+        value={height}
+        onChange={(e) =>
+          setHeight(Number((e.target as HTMLInputElement).value))
+        }
+      />
+      <button onClick={() => add(width, height)}>Add artboard</button>
+    </ToolEntry>
+  )
+}
+
+const Input = styled.input`
+  width: 50px;
+`
+
+const ToolEntry = styled.div`
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-between;
 `
