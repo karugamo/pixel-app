@@ -1,7 +1,7 @@
 import {useRef, useState, useEffect} from 'react'
 import {useCurrentColor, useCurrentTool, useScale, Tool} from './state'
 
-export function useDrawing() {
+export function useDrawing(imageData, setImageData) {
   const [canvasRef, context] = useCanvas()
 
   const [isDrawing, setIsDawing] = useState(false)
@@ -10,7 +10,24 @@ export function useDrawing() {
   const [currentTool] = useCurrentTool()
   const [startPoint, setStartPoint] = useState<{x: number; y: number}>(null)
 
-  useMouse({canvas: canvasRef.current, onMouseDown, onMouseUp, onMouseMove})
+  const canvas = canvasRef.current
+
+  useMouse({canvas, onMouseDown, onMouseUp, onMouseMove})
+
+  useEffect(() => {
+    console.log(context, imageData)
+    if (context && imageData) {
+      context.putImageData(
+        new ImageData(
+          new Uint8ClampedArray(imageData.data),
+          imageData.width,
+          imageData.height
+        ),
+        0,
+        0
+      )
+    }
+  }, [imageData, context])
 
   function onMouseUp(e) {
     if (!isDrawing) return
@@ -25,9 +42,7 @@ export function useDrawing() {
         x - startPoint.x + 1,
         y - startPoint.y + 1
       )
-      return
-    }
-    if (currentTool === Tool.RectangleOutline) {
+    } else if (currentTool === Tool.RectangleOutline) {
       const {x, y} = getCanvasPosition(e)
       context.lineWidth = 1
       context.strokeStyle = currentColor
@@ -37,10 +52,9 @@ export function useDrawing() {
         x - startPoint.x + 1,
         y - startPoint.y + 1
       )
-      return
     }
-    onMouseMove(e)
-    setIsDawing(false)
+
+    setImageData(context.getImageData(0, 0, canvas.width, canvas.height))
   }
 
   function onMouseDown(e) {
@@ -75,10 +89,9 @@ function useCanvas() {
   const [context, setContext] = useState<any>()
 
   useEffect(() => {
-    if (!canvasRef.current) return
     const context = canvasRef.current.getContext('2d')
     setContext(context)
-  }, [canvasRef.current])
+  }, [])
 
   return [canvasRef, context]
 }

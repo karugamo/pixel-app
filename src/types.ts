@@ -4,5 +4,5 @@ export type Artboard = {
   width: number
   height: number
   position: {x: number; y: number}
-  context?: CanvasRenderingContext2D
+  imageData?: ImageData
 }

@@ -34,6 +34,25 @@ export function useScale() {
   return useRecoilState(scale)
 }
 
+export function useImageData(
+  artboardId: string
+): [ImageData, (data: ImageData) => void] {
+  const [artboard, saveArtboard] = useArtboard(artboardId)
+
+  function setImageData(imageData: ImageData) {
+    saveArtboard({
+      ...artboard,
+      imageData: {
+        data: imageData.data,
+        width: imageData.width,
+        height: imageData.height
+      }
+    })
+  }
+
+  return [artboard?.imageData, setImageData]
+}
+
 export function usePosition(artboardId: string) {
   const [artboard, saveArtboard] = useArtboard(artboardId)
 

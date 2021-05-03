@@ -3,7 +3,13 @@ import styled from 'styled-components'
 import useDrag from './useDrag'
 import {nanoid} from 'nanoid'
 import ColorPalette from './ColorPalette'
-import {Tool, useCurrentTool, usePosition, useScale} from './state'
+import {
+  Tool,
+  useCurrentTool,
+  useImageData,
+  usePosition,
+  useScale
+} from './state'
 import {useDrawing} from './useDrawing'
 import {Artboard} from './types'
 import {useArtboards} from './firebase'
@@ -64,10 +70,6 @@ function ArtBoardView({name, width, height, id}: Artboard) {
   const [position, setPosition] = usePosition(id)
   const [handleRef, moveRef] = useDrag(position, setPosition)
 
-  const canvasRef = useDrawing()
-
-  const [scale] = useScale()
-
   if (!position) return null
 
   return (
@@ -75,13 +77,22 @@ function ArtBoardView({name, width, height, id}: Artboard) {
       <Handle ref={handleRef}>
         {name} ({width}x{height})
       </Handle>
-      <Canvas
-        style={{height: height * scale, width: width * scale}}
-        ref={canvasRef}
-        height={height}
-        width={width}
-      />
+      <ArtboardCanvas artboardId={id} height={height} width={width} />
     </ArtBoardContainer>
+  )
+}
+
+function ArtboardCanvas({artboardId, height, width}) {
+  const [imageData, setImageData] = useImageData(artboardId)
+  const canvasRef = useDrawing(imageData, setImageData)
+  const [scale] = useScale()
+  return (
+    <Canvas
+      style={{height: height * scale, width: width * scale}}
+      ref={canvasRef}
+      height={height}
+      width={width}
+    />
   )
 }
 
