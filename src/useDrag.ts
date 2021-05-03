@@ -24,7 +24,7 @@ function useDrag(
     const handleTarget = handleRef.current
 
     if (!moveTarget || !handleTarget) return
-    const previousOffset = {x: 0, y: 0}
+    const previousOffset = {x: position.x, y: position.y}
     let originMouseX
     let originMouseY
     function onMousemove(e) {
