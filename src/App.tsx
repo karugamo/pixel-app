@@ -1,9 +1,9 @@
-import React, {useState} from 'react'
+import React, {Suspense, useState} from 'react'
 import styled from 'styled-components'
 import useDrag from './useDrag'
 import {nanoid} from 'nanoid'
 import ColorPalette from './ColorPalette'
-import {Tool, useCurrentTool, useScale} from './state'
+import {Tool, useCurrentTool, usePosition, useScale} from './state'
 import {useDrawing} from './useDrawing'
 import {Artboard} from './types'
 import {useArtboards} from './firebase'
@@ -37,9 +37,11 @@ export default function App() {
           rectangle outline
         </button>
       </Tools>
-      {artboards.map((artboard) => (
-        <ArtBoardView key={artboard.id} {...artboard} />
-      ))}
+      <Suspense fallback={<div>loading</div>}>
+        {Object.values(artboards).map((artboard) => (
+          <ArtBoardView key={artboard.id} {...artboard} />
+        ))}
+      </Suspense>
     </Main>
   )
 
@@ -49,17 +51,24 @@ export default function App() {
       id: nanoid(),
       name: `artboard ${nextArtBoardNumber}`,
       width,
-      height
+      height,
+      position: {
+        x: 0,
+        y: 0
+      }
     })
   }
 }
 
-function ArtBoardView({name, width, height}: Artboard) {
-  const [handleRef, moveRef] = useDrag()
+function ArtBoardView({name, width, height, id}: Artboard) {
+  const [position, setPosition] = usePosition(id)
+  const [handleRef, moveRef] = useDrag(position, setPosition)
 
   const canvasRef = useDrawing()
 
   const [scale] = useScale()
+
+  if (!position) return null
 
   return (
     <ArtBoardContainer ref={moveRef}>

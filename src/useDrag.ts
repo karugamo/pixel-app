@@ -1,10 +1,24 @@
-import {useEffect, useRef} from 'react'
+import React, {useEffect, useRef} from 'react'
 
 // slightly modified from https://github.com/ShizukuIchi/use-drag/blob/master/src/index.js
 
-function useDrag() {
+function useDrag(
+  position,
+  setPosition
+): [
+  React.MutableRefObject<any>,
+  React.MutableRefObject<any>,
+  {x: number; y: number},
+  any
+] {
   const handleRef = useRef(null)
   const moveRef = useRef(null)
+
+  useEffect(() => {
+    if (moveRef.current)
+      moveRef.current.style.transform = `translate(${position.x}px, ${position.y}px)`
+  }, [position])
+
   useEffect(() => {
     const moveTarget = moveRef.current
     const handleTarget = handleRef.current
@@ -17,7 +31,7 @@ function useDrag() {
       const {pageX, pageY} = e
       const x = pageX - originMouseX + previousOffset.x
       const y = pageY - originMouseY + previousOffset.y
-      moveTarget.style.transform = `translate(${x}px, ${y}px)`
+      setPosition({x, y})
     }
     function onMouseup(e) {
       previousOffset.x += e.pageX - originMouseX
@@ -37,8 +51,9 @@ function useDrag() {
       window.removeEventListener('mouseup', onMouseup)
       window.removeEventListener('mousemove', onMousemove)
     }
-  })
-  return [handleRef, moveRef]
+  }, [Boolean(position)])
+
+  return [handleRef, moveRef, position, setPosition]
 }
 
 export default useDrag

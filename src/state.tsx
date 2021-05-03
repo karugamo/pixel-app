@@ -1,4 +1,5 @@
 import {atom, useRecoilState} from 'recoil'
+import {useArtboard} from './firebase'
 
 export enum Tool {
   Pencil,
@@ -31,4 +32,19 @@ const scale = atom({
 
 export function useScale() {
   return useRecoilState(scale)
+}
+
+export function usePosition(artboardId: string) {
+  const [artboard, saveArtboard] = useArtboard(artboardId)
+
+  function setPosition(position: Position) {
+    saveArtboard({...artboard, position})
+  }
+
+  return [artboard?.position, setPosition]
+}
+
+type Position = {
+  x: number
+  y: number
 }

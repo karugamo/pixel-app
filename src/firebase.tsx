@@ -15,13 +15,24 @@ var firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig)
 
-const database = firebase.database()
+export const database = firebase.database()
 
-export function useArtboards(): [Artboard[], (artboard: Artboard) => void] {
-  const [artboards, setArtboards] = useState([])
+export function useArtboard(
+  artboardId: string
+): [Artboard, (artboard: Artboard) => void] {
+  const [artboards, saveArtboard] = useArtboards()
+
+  return [artboards[artboardId], saveArtboard]
+}
+
+export function useArtboards(): [
+  Record<string, Artboard>,
+  (artboard: Artboard) => void
+] {
+  const [artboards, setArtboards] = useState<Record<string, Artboard>>({})
   useEffect(() => {
     database.ref('artboards').on('value', (snapshot) => {
-      setArtboards(Object.values(snapshot.val()))
+      setArtboards(snapshot.val() ?? {})
     })
   }, [])
 

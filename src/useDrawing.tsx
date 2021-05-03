@@ -75,9 +75,10 @@ function useCanvas() {
   const [context, setContext] = useState<any>()
 
   useEffect(() => {
+    if (!canvasRef.current) return
     const context = canvasRef.current.getContext('2d')
     setContext(context)
-  }, [])
+  }, [canvasRef.current])
 
   return [canvasRef, context]
 }
