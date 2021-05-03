@@ -5,12 +5,14 @@ import {nanoid} from 'nanoid'
 import ColorPalette from './ColorPalette'
 import {Tool, useCurrentTool, useScale} from './state'
 import {useDrawing} from './useDrawing'
+import {Artboard} from './types'
+import {useArtboards} from './firebase'
 
 export default function App() {
-  const [artboards, setArtboards] = useState<ArtBoard[]>([])
   const [nextArtBoardNumber, setNextArtBoardNumber] = useState(1)
   const [, setCurrentTool] = useCurrentTool()
   const [scale, setScale] = useScale()
+  const [artboards, saveArtboard] = useArtboards()
 
   return (
     <Main>
@@ -43,14 +45,16 @@ export default function App() {
 
   function addArtBoard(width: number, height: number) {
     setNextArtBoardNumber((number) => number + 1)
-    setArtboards((artboards) => [
-      ...artboards,
-      {id: nanoid(), name: `artboard ${nextArtBoardNumber}`, width, height}
-    ])
+    saveArtboard({
+      id: nanoid(),
+      name: `artboard ${nextArtBoardNumber}`,
+      width,
+      height
+    })
   }
 }
 
-function ArtBoardView({name, width, height}: ArtBoard) {
+function ArtBoardView({name, width, height}: Artboard) {
   const [handleRef, moveRef] = useDrag()
 
   const canvasRef = useDrawing()
@@ -106,14 +110,6 @@ const Tools = styled.div`
   background-color: white;
   height: 100%;
 `
-
-type ArtBoard = {
-  id: string
-  name: string
-  width: number
-  height: number
-  context?: CanvasRenderingContext2D
-}
 
 function AddArtBoard({add}: {add: (width: number, height: number) => void}) {
   const [width, setWidth] = useState(32)

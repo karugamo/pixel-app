@@ -22,8 +22,8 @@ export function useDrawing() {
       context.fillRect(
         startPoint.x,
         startPoint.y,
-        x - startPoint.x,
-        y - startPoint.y
+        x - startPoint.x + 1,
+        y - startPoint.y + 1
       )
       return
     }
@@ -34,8 +34,8 @@ export function useDrawing() {
       context.strokeRect(
         startPoint.x - 0.5,
         startPoint.y - 0.5,
-        x - startPoint.x,
-        y - startPoint.y
+        x - startPoint.x + 1,
+        y - startPoint.y + 1
       )
       return
     }
