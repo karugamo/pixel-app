@@ -45,6 +45,13 @@ export function useArtboards(): [
   return [artboards, saveArtboard]
 }
 
+export function deleteArtboard(id: string) {
+  firebase
+    .database()
+    .ref('artboards/' + id)
+    .remove()
+}
+
 export function setPosition(
   artboardId: string,
   position: {x: number; y: number}

@@ -7,6 +7,15 @@ export enum Tool {
   RectangleOutline
 }
 
+const currentArtboard = atom({
+  key: 'currentArtboard',
+  default: null
+})
+
+export function useCurrentArboard() {
+  return useRecoilState(currentArtboard)
+}
+
 const currentColor = atom({
   key: 'currentColor',
   default: '#000000'

@@ -5,6 +5,7 @@ import {nanoid} from 'nanoid'
 import ColorPalette from './ColorPalette'
 import {
   Tool,
+  useCurrentArboard,
   useCurrentTool,
   useImageData,
   usePosition,
@@ -12,18 +13,35 @@ import {
 } from './state'
 import {useDrawing} from './useDrawing'
 import {Artboard} from './types'
-import {useArtboards} from './firebase'
+import {deleteArtboard, useArtboards} from './firebase'
+import AddArtboard from './AddArdboard'
+
+function CurrentArtboard({artboard}: {artboard: Artboard}) {
+  const [, setCurentArtboard] = useCurrentArboard()
+
+  return (
+    <div>
+      <h3>{artboard?.name}</h3>
+      <button onClick={onDelete}>delete board</button>
+    </div>
+  )
+
+  function onDelete() {
+    deleteArtboard(artboard.id)
+    setCurentArtboard(null)
+  }
+}
 
 export default function App() {
-  const [nextArtBoardNumber, setNextArtBoardNumber] = useState(1)
   const [, setCurrentTool] = useCurrentTool()
   const [scale, setScale] = useScale()
   const [artboards, saveArtboard] = useArtboards()
+  const [currentArtboard] = useCurrentArboard()
 
   return (
     <Main>
       <Tools>
-        <AddArtBoard add={addArtBoard} />
+        <AddArtboard add={addArtBoard} />
         <ToolEntry>
           scale{' '}
           <Input
@@ -42,6 +60,9 @@ export default function App() {
         <button onClick={() => setCurrentTool(Tool.RectangleOutline)}>
           rectangle outline
         </button>
+        {currentArtboard && (
+          <CurrentArtboard artboard={artboards?.[currentArtboard]} />
+        )}
       </Tools>
       <Suspense fallback={<div>loading</div>}>
         {Object.values(artboards).map((artboard) => (
@@ -52,10 +73,9 @@ export default function App() {
   )
 
   function addArtBoard(width: number, height: number) {
-    setNextArtBoardNumber((number) => number + 1)
     saveArtboard({
       id: nanoid(),
-      name: `artboard ${nextArtBoardNumber}`,
+      name: 'artboard',
       width,
       height,
       position: {
@@ -69,11 +89,12 @@ export default function App() {
 function ArtBoardView({name, width, height, id}: Artboard) {
   const position = usePosition(id)
   const [handleRef, moveRef] = useDrag(id, position)
+  const [, setCurrentArtboard] = useCurrentArboard()
 
   if (!position) return null
 
   return (
-    <ArtBoardContainer ref={moveRef}>
+    <ArtBoardContainer onMouseDown={() => setCurrentArtboard(id)} ref={moveRef}>
       <Handle ref={handleRef}>
         {name} ({width}x{height})
       </Handle>
@@ -115,8 +136,6 @@ const ArtBoardContainer = styled.div`
 const Main = styled.div`
   position: relative;
   height: 100%;
-
-  background-color: #e5e5e5;
   color: #242422;
 `
 
@@ -130,28 +149,6 @@ const Tools = styled.div`
   background-color: white;
   height: 100%;
 `
-
-function AddArtBoard({add}: {add: (width: number, height: number) => void}) {
-  const [width, setWidth] = useState(32)
-  const [height, setHeight] = useState(32)
-  return (
-    <ToolEntry>
-      <Input
-        type="number"
-        value={width}
-        onChange={(e) => setWidth(Number((e.target as HTMLInputElement).value))}
-      />
-      <Input
-        type="number"
-        value={height}
-        onChange={(e) =>
-          setHeight(Number((e.target as HTMLInputElement).value))
-        }
-      />
-      <button onClick={() => add(width, height)}>Add artboard</button>
-    </ToolEntry>
-  )
-}
 
 const Input = styled.input`
   width: 50px;
