@@ -67,8 +67,8 @@ export default function App() {
 }
 
 function ArtBoardView({name, width, height, id}: Artboard) {
-  const [position, setPosition] = usePosition(id)
-  const [handleRef, moveRef] = useDrag(position, setPosition)
+  const position = usePosition(id)
+  const [handleRef, moveRef] = useDrag(id, position)
 
   if (!position) return null
 

@@ -44,3 +44,10 @@ export function useArtboards(): [
   }
   return [artboards, saveArtboard]
 }
+
+export function setPosition(
+  artboardId: string,
+  position: {x: number; y: number}
+) {
+  firebase.database().ref(`artboards/${artboardId}/position`).set(position)
+}

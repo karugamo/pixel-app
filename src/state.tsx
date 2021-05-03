@@ -53,14 +53,10 @@ export function useImageData(
   return [artboard?.imageData, setImageData]
 }
 
-export function usePosition(artboardId: string) {
-  const [artboard, saveArtboard] = useArtboard(artboardId)
+export function usePosition(artboardId: string): Position {
+  const [artboard] = useArtboard(artboardId)
 
-  function setPosition(position: Position) {
-    saveArtboard({...artboard, position})
-  }
-
-  return [artboard?.position, setPosition]
+  return artboard?.position
 }
 
 type Position = {

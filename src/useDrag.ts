@@ -1,10 +1,9 @@
 import React, {useEffect, useRef} from 'react'
-
-// slightly modified from https://github.com/ShizukuIchi/use-drag/blob/master/src/index.js
+import {setPosition} from './firebase'
 
 function useDrag(
-  position,
-  setPosition
+  artboardId,
+  position
 ): [
   React.MutableRefObject<any>,
   React.MutableRefObject<any>,
@@ -31,7 +30,7 @@ function useDrag(
       const {pageX, pageY} = e
       const x = pageX - originMouseX + previousOffset.x
       const y = pageY - originMouseY + previousOffset.y
-      setPosition({x, y})
+      setPosition(artboardId, {x, y})
     }
     function onMouseup(e) {
       previousOffset.x += e.pageX - originMouseX

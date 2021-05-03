@@ -15,7 +15,6 @@ export function useDrawing(imageData, setImageData) {
   useMouse({canvas, onMouseDown, onMouseUp, onMouseMove})
 
   useEffect(() => {
-    console.log(context, imageData)
     if (context && imageData) {
       context.putImageData(
         new ImageData(
