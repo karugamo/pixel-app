@@ -1,8 +1,15 @@
 import {useRef, useState, useEffect} from 'react'
 import {setImageData} from './firebase'
-import {useCurrentColor, useCurrentTool, useScale, Tool} from './state'
+import {
+  useCurrentColor,
+  useCurrentTool,
+  useScale,
+  Tool,
+  useImageData
+} from './state'
 
-export function useDrawing(artboardId, imageData) {
+export function useDrawing(artboardId) {
+  const imageData = useImageData(artboardId)
   const [canvasRef, context] = useCanvas()
 
   const [isDrawing, setIsDawing] = useState(false)
@@ -17,17 +24,13 @@ export function useDrawing(artboardId, imageData) {
 
   useEffect(() => {
     if (context && imageData) {
-      context.putImageData(
-        new ImageData(
-          new Uint8ClampedArray(imageData.data),
-          imageData.width,
-          imageData.height
-        ),
-        0,
-        0
-      )
+      const image = new Image()
+      image.src = imageData
+      image.onload = () => {
+        context.drawImage(image, 0, 0)
+      }
     }
-  }, [imageData, context])
+  }, [context, imageData])
 
   function onMouseUp(e) {
     if (!isDrawing) return
@@ -54,10 +57,7 @@ export function useDrawing(artboardId, imageData) {
       )
     }
 
-    setImageData(
-      artboardId,
-      context.getImageData(0, 0, canvas.width, canvas.height)
-    )
+    setImageData(artboardId, canvas?.toDataURL())
   }
 
   function onMouseDown(e) {

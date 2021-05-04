@@ -1,9 +1,9 @@
 import firebase from 'firebase'
 import {nanoid} from 'nanoid'
 import {useEffect, useState} from 'react'
-import {Artboard} from './types'
+import {Artboard, Position} from './types'
 
-var firebaseConfig = {
+const firebaseConfig = {
   apiKey: 'AIzaSyA4s7hwizpOZ5IvEYM4mhRhujcfHcSXZC4',
   authDomain: 'pixel-app-26bde.firebaseapp.com',
   databaseURL:
@@ -18,17 +18,10 @@ firebase.initializeApp(firebaseConfig)
 
 export const database = firebase.database()
 
-export function useArtboard(
-  artboardId: string
-): [Artboard, (artboard: Artboard) => void] {
-  const [artboards, saveArtboard] = useArtboards()
+export function useArtboard(artboardId: string): Artboard {
+  const artboards = useArtboards()
 
-  return [artboards[artboardId], saveArtboard]
-}
-
-type Position = {
-  x: number
-  y: number
+  return artboards[artboardId]
 }
 
 const currentCursor = nanoid()
@@ -55,28 +48,20 @@ export function useCursors() {
   return cursors
 }
 
-export function useArtboards(): [
-  Record<string, Artboard>,
-  (artboard: Artboard) => void
-] {
+export function useArtboards(): Record<string, Artboard> {
   const [artboards, setArtboards] = useState<Record<string, Artboard>>({})
   useEffect(() => {
     database.ref('artboards').on('value', onSnapshot)
 
     function onSnapshot(snapshot) {
-      setArtboards(snapshot.val() ?? {})
+      const newArtboards = snapshot.val()
+      setArtboards(newArtboards ?? {})
     }
 
     return () => database.ref('artboards').off('value', onSnapshot)
   }, [])
 
-  function saveArtboard(artboard: Artboard) {
-    firebase
-      .database()
-      .ref('artboards/' + artboard.id)
-      .set(artboard)
-  }
-  return [artboards, saveArtboard]
+  return artboards
 }
 
 export function deleteArtboard(id: string) {
@@ -86,6 +71,13 @@ export function deleteArtboard(id: string) {
     .remove()
 }
 
+export function saveArtboard(artboard: Artboard) {
+  firebase
+    .database()
+    .ref('artboards/' + artboard.id)
+    .set(artboard)
+}
+
 export function setPosition(
   artboardId: string,
   position: {x: number; y: number}
@@ -93,10 +85,6 @@ export function setPosition(
   firebase.database().ref(`artboards/${artboardId}/position`).set(position)
 }
 
-export function setImageData(artboardId: string, imageData: ImageData) {
-  firebase.database().ref(`artboards/${artboardId}/imageData`).set({
-    data: imageData.data,
-    width: imageData.width,
-    height: imageData.height
-  })
+export function setImageData(artboardId: string, imageData: string) {
+  firebase.database().ref(`artboards/${artboardId}/imageData`).set(imageData)
 }

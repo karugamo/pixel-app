@@ -13,8 +13,8 @@ export default function Cursors() {
 
   return (
     <>
-      {Object.values(cursors).map((position, index) => (
-        <Cursor key={index} position={position} />
+      {Object.entries(cursors).map(([key, position]) => (
+        <Cursor key={key} position={position} />
       ))}
     </>
   )

@@ -4,7 +4,7 @@ import styled from 'styled-components'
 
 export default function Cursor({position}: {position: Position}) {
   return (
-    <CursorContainer position={position}>
+    <CursorContainer style={{top: position.y, left: position.x}}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         version="1.1"
@@ -26,9 +26,7 @@ export default function Cursor({position}: {position: Position}) {
   )
 }
 
-const CursorContainer = styled.div<{position: Position}>`
+const CursorContainer = styled.div`
   position: fixed;
   z-index: 1000;
-  left: ${({position}) => position.x};
-  top: ${({position}) => position.y};
 `

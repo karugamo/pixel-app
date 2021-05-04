@@ -43,14 +43,14 @@ export function useScale() {
   return useRecoilState(scale)
 }
 
-export function useImageData(artboardId: string): ImageData {
-  const [artboard] = useArtboard(artboardId)
+export function useImageData(artboardId: string): string {
+  const artboard = useArtboard(artboardId)
 
   return artboard?.imageData
 }
 
 export function usePosition(artboardId: string): Position {
-  const [artboard] = useArtboard(artboardId)
+  const artboard = useArtboard(artboardId)
 
   return artboard?.position
 }

@@ -4,7 +4,7 @@ export type Artboard = {
   width: number
   height: number
   position: Position
-  imageData?: ImageData
+  imageData?: string
 }
 
 export type Position = {
