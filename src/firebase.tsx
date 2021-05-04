@@ -1,4 +1,5 @@
 import firebase from 'firebase'
+import {nanoid} from 'nanoid'
 import {useEffect, useState} from 'react'
 import {Artboard} from './types'
 
@@ -23,6 +24,35 @@ export function useArtboard(
   const [artboards, saveArtboard] = useArtboards()
 
   return [artboards[artboardId], saveArtboard]
+}
+
+type Position = {
+  x: number
+  y: number
+}
+
+const currentCursor = nanoid()
+
+export function setCursor(position: Position) {
+  database.ref(`cursors/${currentCursor}`).set(position)
+}
+
+export function useCursors() {
+  const [cursors, setCursors] = useState<Record<string, Position>>({})
+
+  useEffect(() => {
+    database.ref('cursors').on('value', onSnapshot)
+
+    function onSnapshot(snapshot) {
+      const allCursors = snapshot.val()
+      if (allCursors) delete allCursors[currentCursor]
+      setCursors(allCursors ?? {})
+    }
+
+    return () => database.ref('cursors').off('value', onSnapshot)
+  }, [])
+
+  return cursors
 }
 
 export function useArtboards(): [
