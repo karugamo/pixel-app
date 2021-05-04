@@ -1,8 +1,11 @@
-import React, {Suspense, useCallback, useEffect} from 'react'
-import styled from 'styled-components'
-import useDrag from './useDrag'
 import {nanoid} from 'nanoid'
+import React, {Suspense, useCallback} from 'react'
+import {useDropzone} from 'react-dropzone'
+import styled from 'styled-components'
+import AddArtboard from './AddArdboard'
 import ColorPalette from './ColorPalette'
+import Cursors from './Cursors'
+import {deleteArtboard, useArtboards} from './firebase'
 import {
   Tool,
   useCurrentArboard,
@@ -11,11 +14,9 @@ import {
   usePosition,
   useScale
 } from './state'
-import {useDrawing} from './useDrawing'
 import {Artboard} from './types'
-import {deleteArtboard, setCursor, useArtboards, useCursors} from './firebase'
-import AddArtboard from './AddArdboard'
-import {useDropzone} from 'react-dropzone'
+import useDrag from './useDrag'
+import {useDrawing} from './useDrawing'
 
 function CurrentArtboard({artboard}: {artboard: Artboard}) {
   const [, setCurentArtboard] = useCurrentArboard()
@@ -33,63 +34,18 @@ function CurrentArtboard({artboard}: {artboard: Artboard}) {
   }
 }
 
-type Position = {
-  x: number
-  y: number
-}
-
-const CursorContainer = styled.div<{position: Position}>`
-  position: fixed;
-  z-index: 1000;
-  left: ${({position}) => position.x};
-  top: ${({position}) => position.y};
-`
-
-function Cursor({position}: {position: Position}) {
-  return (
-    <CursorContainer position={position}>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        version="1.1"
-        id="Capa_1"
-        x="0px"
-        y="0px"
-        viewBox="0 0 512 512"
-        xmlSpace="preserve"
-        width="16"
-        height="16"
-      >
-        <g id="_x3C_Group_x3E__20_">
-          <g>
-            <path d="M90.998,512c-1.934,0-3.882-0.366-5.742-1.143c-5.61-2.314-9.258-7.793-9.258-13.857V15    c0-6.064,3.647-11.543,9.258-13.857c5.625-2.329,12.056-1.025,16.348,3.252l330,331c4.292,4.292,5.581,10.737,3.252,16.348    c-2.314,5.61-7.793,9.258-13.857,9.258H247.209L101.604,507.606C98.733,510.477,94.895,512,90.998,512z" />
-          </g>
-        </g>
-      </svg>
-    </CursorContainer>
-  )
-}
-
 export default function App() {
   const [, setCurrentTool] = useCurrentTool()
   const [scale, setScale] = useScale()
   const [artboards, saveArtboard] = useArtboards()
   const [currentArtboard] = useCurrentArboard()
-  const cursors = useCursors()
 
   const {getRootProps, getInputProps, isDragActive} = useDropFiles()
-
-  useEffect(() => {
-    window.addEventListener('mousemove', (e) => {
-      setCursor({x: e.pageX, y: e.pageY})
-    })
-  }, [])
 
   return (
     <Main {...getRootProps()} fileDrop={isDragActive}>
       <input {...getInputProps()} />
-      {Object.values(cursors).map((position, index) => (
-        <Cursor key={index} position={position} />
-      ))}
+      <Cursors />
       <Tools>
         <AddArtboard add={addArtBoard} />
         <ToolEntry>
