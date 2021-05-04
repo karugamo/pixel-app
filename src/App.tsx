@@ -40,6 +40,7 @@ type Position = {
 
 const CursorContainer = styled.div<{position: Position}>`
   position: fixed;
+  z-index: 1000;
   left: ${({position}) => position.x};
   top: ${({position}) => position.y};
 `
