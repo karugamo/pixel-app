@@ -74,6 +74,8 @@ export function useDrawing(artboardId) {
       context.fillStyle = currentColor
       context.fillRect(x, y, 1, 1)
     }
+
+    setImageData(artboardId, canvas?.toDataURL())
   }
 
   function getCanvasPosition(e) {
