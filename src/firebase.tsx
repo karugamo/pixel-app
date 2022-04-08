@@ -1,8 +1,16 @@
 import { initializeApp } from "firebase/app";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  User,
+} from "firebase/auth";
 import { getDatabase, onValue, ref, remove, set } from "firebase/database";
 import { nanoid } from "nanoid";
 import { useEffect, useState } from "react";
 import { Artboard, Position } from "./types";
+
+const provider = new GoogleAuthProvider();
 
 const firebaseConfig = {
   apiKey: "AIzaSyA4s7hwizpOZ5IvEYM4mhRhujcfHcSXZC4",
@@ -16,6 +24,26 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+
+export function useAuthUser() {
+  const [auth, setAuth] = useState<User | null>(null);
+
+  useEffect(() => {
+    return getAuth().onAuthStateChanged(setAuth);
+  }, []);
+
+  return auth;
+}
+
+export function loginWithGoogle() {
+  const auth = getAuth();
+  signInWithPopup(auth, provider);
+}
+
+export function logout() {
+  getAuth().signOut();
+}
+
 const currentCursor = nanoid();
 
 export const database = getDatabase(app);
