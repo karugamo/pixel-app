@@ -3,16 +3,48 @@ import React from "react";
 import styled from "styled-components";
 import AddArtboard from "./AddArdboard";
 import ColorPalette from "./ColorPalette";
-import { deleteArtboard, logout, saveArtboard, useArtboards } from "./firebase";
+import {
+  deleteArtboard,
+  logout,
+  saveArtboard,
+  useArtboards,
+  useAuthUser,
+} from "./firebase";
 import { Tool, useCurrentArboard, useCurrentTool, useScale } from "./state";
+
+const UserPicture = styled.img`
+  width: 50px;
+  height: 50px;
+  border-radius: 5px;
+`;
+
+const UserInfo = styled.section`
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e0e0e0;
+`;
 
 export default function Menu() {
   const [, setCurrentTool] = useCurrentTool();
   const [scale, setScale] = useScale();
   const [currentArtboard] = useCurrentArboard();
+  const user = useAuthUser();
+
+  if (!user) return null;
 
   return (
     <Tools>
+      <UserInfo>
+        <UserPicture width={50} height={50} src={user.photoURL} alt="user" />
+        <div>
+          Logged in as
+          <br />
+          <strong>{user.displayName}</strong>
+        </div>
+      </UserInfo>
       <AddArtboard add={addArtBoard} />
       <ToolEntry>
         scale{" "}

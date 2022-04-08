@@ -26,6 +26,7 @@ export default function App() {
 const Main = styled.div<{fileDrop: boolean}>`
   position: relative;
   height: 100%;
+  user-select: none;
   color: #242422;
   ${({fileDrop}) => fileDrop && `background-color: #BDB5B1;`}
 `
