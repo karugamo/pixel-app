@@ -5,6 +5,7 @@ import AddArtboard from "./AddArdboard";
 import ColorPalette from "./ColorPalette";
 import Button from "./components/Button";
 import Input from "./components/Input";
+import VerticalDivider from "./components/VerticalDivider";
 import {
   deleteArtboard,
   logout,
@@ -24,42 +25,57 @@ export default function Menu() {
 
   return (
     <Tools>
-      <AddArtboard add={addArtBoard} />
-      <ToolEntry>
-        scale{" "}
-        <Input
-          type="number"
-          value={scale}
-          onChange={(e) =>
-            setScale(Number((e.target as HTMLInputElement).value))
-          }
-        />
-      </ToolEntry>
-      <ColorPalette />
-      <Button onClick={() => setCurrentTool(Tool.Pencil)}>pencil</Button>
-      <Button onClick={() => setCurrentTool(Tool.Rectangle)}>
-        rectangle fill
-      </Button>
-      <Button onClick={() => setCurrentTool(Tool.RectangleOutline)}>
-        rectangle outline
-      </Button>
+      <MainTools>
+        <AddArtboard add={addArtBoard} />
+      </MainTools>
+      <VerticalDivider />
+      <MainTools>
+        <ToolEntry>
+          scale{" "}
+          <Input
+            type="number"
+            value={scale}
+            onChange={(e) =>
+              setScale(Number((e.target as HTMLInputElement).value))
+            }
+          />
+        </ToolEntry>
+      </MainTools>
+      <VerticalDivider />
+      <MainTools>
+        <ColorPalette />
+      </MainTools>
+      <VerticalDivider />
+      <MainTools>
+        <Button onClick={() => setCurrentTool(Tool.Pencil)}>pencil</Button>
+        <Button onClick={() => setCurrentTool(Tool.Rectangle)}>
+          rectangle fill
+        </Button>
+        <Button onClick={() => setCurrentTool(Tool.RectangleOutline)}>
+          rectangle outline
+        </Button>
+      </MainTools>
+
       {currentArtboard && <CurrentArtboard />}
       <Grower />
-      <UserInfo>
-        <UserPicture
-          referrerPolicy="no-referrer"
-          width={50}
-          height={50}
-          src={user.photoURL}
-          alt="user"
-        />
-        <div>
-          Logged in as
-          <br />
-          <strong>{user.displayName}</strong>
-        </div>
-      </UserInfo>
-      <Button onClick={logout}>Log Out</Button>
+      <VerticalDivider />
+      <User>
+        <UserInfo>
+          <UserPicture
+            referrerPolicy="no-referrer"
+            width={50}
+            height={50}
+            src={user.photoURL}
+            alt="user"
+          />
+          <div>
+            Logged in as
+            <br />
+            <strong>{user.displayName}</strong>
+          </div>
+        </UserInfo>
+        <Button onClick={logout}>Log Out</Button>
+      </User>
     </Tools>
   );
 }
@@ -70,10 +86,13 @@ function CurrentArtboard() {
   const artboard = artboards?.[currentArtboardId];
 
   return (
-    <div>
-      <h3>{artboard?.name}</h3>
-      <Button onClick={onDelete}>delete board</Button>
-    </div>
+    <>
+      <VerticalDivider />
+      <MainTools>
+        <ToolsHeader>{artboard?.name}</ToolsHeader>
+        <Button onClick={onDelete}>delete board</Button>
+      </MainTools>
+    </>
   );
 
   function onDelete() {
@@ -97,16 +116,13 @@ function addArtBoard(width: number, height: number) {
 
 const Tools = styled.div`
   display: flex;
-  padding: 16px;
   flex-direction: column;
-  align-items: center;
   gap: 16px;
   width: 250px;
   background-color: white;
   box-sizing: border-box;
   height: 100%;
 `;
-
 
 const ToolEntry = styled.div`
   display: flex;
@@ -126,11 +142,28 @@ const UserPicture = styled.img`
   border-radius: 5px;
 `;
 
+const User = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin: 16px;
+  gap: 16px;
+`;
+
 const UserInfo = styled.section`
   display: flex;
-  gap: 20px;
+  gap: 16px;
   width: 100%;
   align-items: center;
-  padding-top: 10px;
-  border-top: 1px solid #e0e0e0;
+`;
+
+const MainTools = styled.section`
+  display: flex;
+  flex-direction: column;
+  margin: 16px;
+  gap: 16px;
+`;
+
+const ToolsHeader = styled.h3`
+  margin-bottom: 0;
+  margin-top: 0;
 `;
