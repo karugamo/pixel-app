@@ -12,39 +12,16 @@ import {
 } from "./firebase";
 import { Tool, useCurrentArboard, useCurrentTool, useScale } from "./state";
 
-const UserPicture = styled.img`
-  width: 50px;
-  height: 50px;
-  border-radius: 5px;
-`;
-
-const UserInfo = styled.section`
-  display: flex;
-  gap: 20px;
-  width: 100%;
-  align-items: center;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #e0e0e0;
-`;
-
 export default function Menu() {
   const [, setCurrentTool] = useCurrentTool();
   const [scale, setScale] = useScale();
   const [currentArtboard] = useCurrentArboard();
-  const {user} = useAuthUser();
+  const { user } = useAuthUser();
 
   if (!user) return null;
 
   return (
     <Tools>
-      <UserInfo>
-        <UserPicture width={50} height={50} src={user.photoURL} alt="user" />
-        <div>
-          Logged in as
-          <br />
-          <strong>{user.displayName}</strong>
-        </div>
-      </UserInfo>
       <AddArtboard add={addArtBoard} />
       <ToolEntry>
         scale{" "}
@@ -64,8 +41,17 @@ export default function Menu() {
       <button onClick={() => setCurrentTool(Tool.RectangleOutline)}>
         rectangle outline
       </button>
-      <button onClick={logout}>Log Out</button>
       {currentArtboard && <CurrentArtboard />}
+      <Grower />
+      <UserInfo>
+        <UserPicture width={50} height={50} src={user.photoURL} alt="user" />
+        <div>
+          Logged in as
+          <br />
+          <strong>{user.displayName}</strong>
+        </div>
+      </UserInfo>
+      <button onClick={logout}>Log Out</button>
     </Tools>
   );
 }
@@ -107,8 +93,9 @@ const Tools = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 16px;
-  width: 200px;
+  width: 250px;
   background-color: white;
+  box-sizing: border-box;
   height: 100%;
 `;
 
@@ -121,4 +108,24 @@ const ToolEntry = styled.div`
   flex-direction: row;
   width: 100%;
   justify-content: space-between;
+`;
+
+const Grower = styled.div`
+  display: flex;
+  flex: 1;
+`;
+
+const UserPicture = styled.img`
+  width: 50px;
+  height: 50px;
+  border-radius: 5px;
+`;
+
+const UserInfo = styled.section`
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid #e0e0e0;
 `;
