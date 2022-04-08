@@ -1,5 +1,7 @@
 import React, {useState} from 'react'
 import styled from 'styled-components'
+import Button from './components/Button'
+import Input from './components/Input'
 
 type AddArtboardProps = {
   add: (width: number, height: number) => void
@@ -22,7 +24,7 @@ export default function AddArtboard({add}: AddArtboardProps) {
           setHeight(Number((e.target as HTMLInputElement).value))
         }
       />
-      <button onClick={() => add(width, height)}>Add artboard</button>
+      <Button onClick={() => add(width, height)}>Add artboard</Button>
     </Container>
   )
 }
@@ -33,6 +35,4 @@ const Container = styled.div`
   width: 100%;
   justify-content: space-between;
 `
-const Input = styled.input`
-  width: 50px;
-`
+

@@ -3,6 +3,8 @@ import React from "react";
 import styled from "styled-components";
 import AddArtboard from "./AddArdboard";
 import ColorPalette from "./ColorPalette";
+import Button from "./components/Button";
+import Input from "./components/Input";
 import {
   deleteArtboard,
   logout,
@@ -34,24 +36,30 @@ export default function Menu() {
         />
       </ToolEntry>
       <ColorPalette />
-      <button onClick={() => setCurrentTool(Tool.Pencil)}>pencil</button>
-      <button onClick={() => setCurrentTool(Tool.Rectangle)}>
+      <Button onClick={() => setCurrentTool(Tool.Pencil)}>pencil</Button>
+      <Button onClick={() => setCurrentTool(Tool.Rectangle)}>
         rectangle fill
-      </button>
-      <button onClick={() => setCurrentTool(Tool.RectangleOutline)}>
+      </Button>
+      <Button onClick={() => setCurrentTool(Tool.RectangleOutline)}>
         rectangle outline
-      </button>
+      </Button>
       {currentArtboard && <CurrentArtboard />}
       <Grower />
       <UserInfo>
-        <UserPicture width={50} height={50} src={user.photoURL} alt="user" />
+        <UserPicture
+          referrerPolicy="no-referrer"
+          width={50}
+          height={50}
+          src={user.photoURL}
+          alt="user"
+        />
         <div>
           Logged in as
           <br />
           <strong>{user.displayName}</strong>
         </div>
       </UserInfo>
-      <button onClick={logout}>Log Out</button>
+      <Button onClick={logout}>Log Out</Button>
     </Tools>
   );
 }
@@ -64,7 +72,7 @@ function CurrentArtboard() {
   return (
     <div>
       <h3>{artboard?.name}</h3>
-      <button onClick={onDelete}>delete board</button>
+      <Button onClick={onDelete}>delete board</Button>
     </div>
   );
 
@@ -99,9 +107,6 @@ const Tools = styled.div`
   height: 100%;
 `;
 
-const Input = styled.input`
-  width: 50px;
-`;
 
 const ToolEntry = styled.div`
   display: flex;
