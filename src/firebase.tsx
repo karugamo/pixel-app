@@ -35,7 +35,7 @@ export function useAuthUser() {
     });
   }, []);
 
-  return {user, loginStatusKnown: user !== undefined};
+  return { user, loginStatusKnown: user !== undefined };
 }
 
 export function loginWithGoogle() {
@@ -51,7 +51,7 @@ const currentCursor = nanoid();
 
 export const database = getDatabase(app);
 
-const cursorsRef = ref(database, "cursor");
+const cursorsRef = ref(database, "cursors");
 const currentCursorRef = ref(database, `cursors/${currentCursor}`);
 const artboardsRef = ref(database, "artboards");
 
@@ -72,7 +72,9 @@ export function useCursors() {
     return onValue(cursorsRef, onSnapshot);
 
     function onSnapshot(snapshot) {
+      console.log(snapshot);
       const allCursors = snapshot.val();
+      console.log(allCursors);
       if (allCursors) delete allCursors[currentCursor];
       setCursors(allCursors ?? {});
     }
