@@ -1,10 +1,10 @@
-import React from 'react'
-import {Position} from './types'
-import styled from 'styled-components'
+import React from "react";
+import styled from "styled-components";
+import { Position } from "./types";
 
-export default function Cursor({position}: {position: Position}) {
+export default function Cursor({ position, name }: { position: Position, name: string }) {
   return (
-    <CursorContainer style={{top: position.y, left: position.x}}>
+    <CursorContainer style={{ top: position.y, left: position.x }}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         version="1.1"
@@ -22,11 +22,12 @@ export default function Cursor({position}: {position: Position}) {
           </g>
         </g>
       </svg>
+      {name}
     </CursorContainer>
-  )
+  );
 }
 
 const CursorContainer = styled.div`
   position: fixed;
   z-index: 1000;
-`
+`;

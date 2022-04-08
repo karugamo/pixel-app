@@ -36,10 +36,7 @@ export function useAuthUser() {
   const [user, setUser] = useState<User | null>(undefined);
 
   useEffect(() => {
-    return getAuth().onAuthStateChanged((user) => {
-      console.log({ user });
-      setUser(user);
-    });
+    return getAuth().onAuthStateChanged(setUser);
   }, []);
 
   return { user, loginStatusKnown: user !== undefined };
@@ -54,12 +51,9 @@ export function logout() {
   getAuth().signOut();
 }
 
-const currentCursor = nanoid();
-
 export const database = getDatabase(app);
 
 const cursorsRef = ref(database, "cursors");
-const currentCursorRef = ref(database, `cursors/${currentCursor}`);
 const artboardsRef = ref(database, "artboards");
 
 export function useArtboard(artboardId: string): Artboard {
@@ -68,19 +62,32 @@ export function useArtboard(artboardId: string): Artboard {
   return artboards[artboardId];
 }
 
-export function setCursor(position: Position) {
-  set(currentCursorRef, position);
+export function setCursor(position: Position, user: User) {
+  const currentCursorRef = ref(database, `cursors/${user.uid}`);
+  set(currentCursorRef, {
+    name: user.displayName,
+    id: user.uid,
+    lastSeen: Date.now(),
+    ...position,
+  });
 }
 
-export function useCursors() {
-  const [cursors, setCursors] = useState<Record<string, Position>>({});
+interface Cursor {
+  x: number;
+  y: number;
+  name: string;
+  id: string;
+  lastSeen: number;
+}
+
+export function  useCursors() {
+  const [cursors, setCursors] = useState<Record<string, Cursor>>({});
 
   useEffect(() => {
     return onValue(cursorsRef, onSnapshot);
 
     function onSnapshot(snapshot: DataSnapshot) {
       const allCursors = snapshot.val();
-      if (allCursors) delete allCursors[currentCursor];
       setCursors(allCursors ?? {});
     }
   }, []);
