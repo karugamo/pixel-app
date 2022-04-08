@@ -31,7 +31,7 @@ export default function Menu() {
   const [, setCurrentTool] = useCurrentTool();
   const [scale, setScale] = useScale();
   const [currentArtboard] = useCurrentArboard();
-  const user = useAuthUser();
+  const {user} = useAuthUser();
 
   if (!user) return null;
 

@@ -26,13 +26,16 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 export function useAuthUser() {
-  const [auth, setAuth] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(undefined);
 
   useEffect(() => {
-    return getAuth().onAuthStateChanged(setAuth);
+    return getAuth().onAuthStateChanged((user) => {
+      console.log({ user });
+      setUser(user);
+    });
   }, []);
 
-  return auth;
+  return {user, loginStatusKnown: user !== undefined};
 }
 
 export function loginWithGoogle() {
