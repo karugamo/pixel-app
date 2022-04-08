@@ -1,90 +1,84 @@
-import firebase from 'firebase'
-import {nanoid} from 'nanoid'
-import {useEffect, useState} from 'react'
-import {Artboard, Position} from './types'
+import { initializeApp } from "firebase/app";
+import { getDatabase, onValue, ref, remove, set } from "firebase/database";
+import { nanoid } from "nanoid";
+import { useEffect, useState } from "react";
+import { Artboard, Position } from "./types";
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyA4s7hwizpOZ5IvEYM4mhRhujcfHcSXZC4',
-  authDomain: 'pixel-app-26bde.firebaseapp.com',
+  apiKey: "AIzaSyA4s7hwizpOZ5IvEYM4mhRhujcfHcSXZC4",
+  authDomain: "pixel-app-26bde.firebaseapp.com",
   databaseURL:
-    'https://pixel-app-26bde-default-rtdb.europe-west1.firebasedatabase.app',
-  projectId: 'pixel-app-26bde',
-  storageBucket: 'pixel-app-26bde.appspot.com',
-  messagingSenderId: '884972653162',
-  appId: '1:884972653162:web:9a56d881f2837e22809813'
-}
+    "https://pixel-app-26bde-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "pixel-app-26bde",
+  storageBucket: "pixel-app-26bde.appspot.com",
+  messagingSenderId: "884972653162",
+  appId: "1:884972653162:web:9a56d881f2837e22809813",
+};
 
-firebase.initializeApp(firebaseConfig)
+const app = initializeApp(firebaseConfig);
+const currentCursor = nanoid();
 
-export const database = firebase.database()
+export const database = getDatabase(app);
+
+const cursorsRef = ref(database, "cursor");
+const currentCursorRef = ref(database, `cursors/${currentCursor}`);
+const artboardsRef = ref(database, "artboards");
 
 export function useArtboard(artboardId: string): Artboard {
-  const artboards = useArtboards()
+  const artboards = useArtboards();
 
-  return artboards[artboardId]
+  return artboards[artboardId];
 }
 
-const currentCursor = nanoid()
-
 export function setCursor(position: Position) {
-  database.ref(`cursors/${currentCursor}`).set(position)
+  set(currentCursorRef, position);
 }
 
 export function useCursors() {
-  const [cursors, setCursors] = useState<Record<string, Position>>({})
+  const [cursors, setCursors] = useState<Record<string, Position>>({});
 
   useEffect(() => {
-    database.ref('cursors').on('value', onSnapshot)
+    return onValue(cursorsRef, onSnapshot);
 
     function onSnapshot(snapshot) {
-      const allCursors = snapshot.val()
-      if (allCursors) delete allCursors[currentCursor]
-      setCursors(allCursors ?? {})
+      const allCursors = snapshot.val();
+      if (allCursors) delete allCursors[currentCursor];
+      setCursors(allCursors ?? {});
     }
+  }, []);
 
-    return () => database.ref('cursors').off('value', onSnapshot)
-  }, [])
-
-  return cursors
+  return cursors;
 }
 
 export function useArtboards(): Record<string, Artboard> {
-  const [artboards, setArtboards] = useState<Record<string, Artboard>>({})
+  const [artboards, setArtboards] = useState<Record<string, Artboard>>({});
   useEffect(() => {
-    database.ref('artboards').on('value', onSnapshot)
+    return onValue(artboardsRef, onSnapshot);
 
     function onSnapshot(snapshot) {
-      const newArtboards = snapshot.val()
-      setArtboards(newArtboards ?? {})
+      const newArtboards = snapshot.val();
+      setArtboards(newArtboards ?? {});
     }
+  }, []);
 
-    return () => database.ref('artboards').off('value', onSnapshot)
-  }, [])
-
-  return artboards
+  return artboards;
 }
 
 export function deleteArtboard(id: string) {
-  firebase
-    .database()
-    .ref('artboards/' + id)
-    .remove()
+  remove(ref(database, "artboards/" + id));
 }
 
 export function saveArtboard(artboard: Artboard) {
-  firebase
-    .database()
-    .ref('artboards/' + artboard.id)
-    .set(artboard)
+  set(ref(database, "artboards/" + artboard.id), artboard);
 }
 
 export function setPosition(
   artboardId: string,
-  position: {x: number; y: number}
+  position: { x: number; y: number }
 ) {
-  firebase.database().ref(`artboards/${artboardId}/position`).set(position)
+  set(ref(database, `artboards/${artboardId}/position`), position);
 }
 
 export function setImageData(artboardId: string, imageData: string) {
-  firebase.database().ref(`artboards/${artboardId}/imageData`).set(imageData)
+  set(ref(database, `artboards/${artboardId}/imageData`), imageData);
 }
