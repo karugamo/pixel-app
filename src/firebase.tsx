@@ -5,7 +5,14 @@ import {
   signInWithPopup,
   User,
 } from "firebase/auth";
-import { getDatabase, onValue, ref, remove, set } from "firebase/database";
+import {
+  DataSnapshot,
+  getDatabase,
+  onValue,
+  ref,
+  remove,
+  set,
+} from "firebase/database";
 import { nanoid } from "nanoid";
 import { useEffect, useState } from "react";
 import { Artboard, Position } from "./types";
@@ -71,10 +78,8 @@ export function useCursors() {
   useEffect(() => {
     return onValue(cursorsRef, onSnapshot);
 
-    function onSnapshot(snapshot) {
-      console.log(snapshot);
+    function onSnapshot(snapshot: DataSnapshot) {
       const allCursors = snapshot.val();
-      console.log(allCursors);
       if (allCursors) delete allCursors[currentCursor];
       setCursors(allCursors ?? {});
     }
@@ -88,7 +93,7 @@ export function useArtboards(): Record<string, Artboard> {
   useEffect(() => {
     return onValue(artboardsRef, onSnapshot);
 
-    function onSnapshot(snapshot) {
+    function onSnapshot(snapshot: DataSnapshot) {
       const newArtboards = snapshot.val();
       setArtboards(newArtboards ?? {});
     }
