@@ -16,7 +16,7 @@ import {
 import { Tool, useCurrentArboard, useCurrentTool, useScale } from "./state";
 
 export default function Menu() {
-  const [, setCurrentTool] = useCurrentTool();
+  const [currentTool, setCurrentTool] = useCurrentTool();
   const [scale, setScale] = useScale();
   const [currentArtboard] = useCurrentArboard();
   const { user } = useAuthUser();
@@ -47,11 +47,11 @@ export default function Menu() {
       </MainTools>
       <VerticalDivider />
       <MainTools>
-        <Button onClick={() => setCurrentTool(Tool.Pencil)}>pencil</Button>
-        <Button onClick={() => setCurrentTool(Tool.Rectangle)}>
+        <Button selected={currentTool === Tool.Pencil} onClick={() => setCurrentTool(Tool.Pencil)}>pencil</Button>
+        <Button selected={currentTool === Tool.Rectangle} onClick={() => setCurrentTool(Tool.Rectangle)}>
           rectangle fill
         </Button>
-        <Button onClick={() => setCurrentTool(Tool.RectangleOutline)}>
+        <Button selected={currentTool === Tool.RectangleOutline} onClick={() => setCurrentTool(Tool.RectangleOutline)}>
           rectangle outline
         </Button>
       </MainTools>
