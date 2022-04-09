@@ -63,19 +63,25 @@ export function useDrawing(artboardId) {
   function onMouseDown(e) {
     setIsDawing(true)
     setStartPoint(getCanvasPosition(e))
-    onMouseMove(e)
+    mouseDownActions(e)
+  }
+
+  function mouseDownActions(e) {
+    if (currentTool === Tool.Pencil) {
+      const {x, y} = getCanvasPosition(e)
+      context.fillStyle = currentColor
+      context.fillRect(x, y, 1, 1)
+    } else {
+      return
+    }
+
+    setImageData(artboardId, canvas?.toDataURL())
   }
 
   function onMouseMove(e) {
     if (!isDrawing || !context) return
 
-    if (currentTool === Tool.Pencil) {
-      const {x, y} = getCanvasPosition(e)
-      context.fillStyle = currentColor
-      context.fillRect(x, y, 1, 1)
-    }
-
-    setImageData(artboardId, canvas?.toDataURL())
+    mouseDownActions(e)
   }
 
   function getCanvasPosition(e) {
